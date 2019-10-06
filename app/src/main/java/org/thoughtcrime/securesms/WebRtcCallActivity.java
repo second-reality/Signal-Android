@@ -244,7 +244,9 @@ public class WebRtcCallActivity extends Activity {
   }
 
   private void handleCallRinging(@NonNull WebRtcViewModel event) {
-    callScreen.setActiveCall(event.getRecipient(), getString(R.string.RedPhone_ringing), event.getLocalRenderer());
+    // Do not report if user is ringing
+    //callScreen.setActiveCall(event.getRecipient(), getString(R.string.RedPhone_ringing), event.getLocalRenderer());
+    callScreen.setActiveCall(event.getRecipient(), getString(R.string.RedPhone_dialing), event.getLocalRenderer());
   }
 
   private void handleCallBusy(@NonNull WebRtcViewModel event) {
