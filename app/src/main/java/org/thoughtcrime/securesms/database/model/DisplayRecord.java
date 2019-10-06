@@ -173,8 +173,9 @@ public abstract class DisplayRecord {
   }
 
   public boolean isDelivered() {
-    return (deliveryStatus >= SmsDatabase.Status.STATUS_COMPLETE &&
-            deliveryStatus < SmsDatabase.Status.STATUS_PENDING) || deliveryReceiptCount > 0;
+    return false; // do not use delivery
+    //return (deliveryStatus >= SmsDatabase.Status.STATUS_COMPLETE &&
+    //        deliveryStatus < SmsDatabase.Status.STATUS_PENDING) || deliveryReceiptCount > 0;
   }
 
   public boolean isRemoteRead() {
