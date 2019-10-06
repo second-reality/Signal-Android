@@ -81,9 +81,10 @@ public class SendDeliveryReceiptJob extends BaseJob {
                                                                                  Collections.singletonList(messageId),
                                                                                  timestamp);
 
-    messageSender.sendReceipt(remoteAddress,
-                              UnidentifiedAccessUtil.getAccessFor(context, recipient),
-                              receiptMessage);
+    return; // do not use delivery
+    //messageSender.sendReceipt(remoteAddress,
+    //                          UnidentifiedAccessUtil.getAccessFor(context, recipient),
+    //                          receiptMessage);
   }
 
   @Override
