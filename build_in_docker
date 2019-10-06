@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+docker_img=local:signal_app_build
+
+docker_run()
+{
+    docker run --rm=true\
+    -w $(pwd) -v $HOME:$HOME -v $(pwd):$(pwd)\
+    -e USER=$USER \
+    -e HOME=$HOME \
+    -v /etc/passwd:/etc/passwd:ro \
+    -v /etc/group:/etc/group:ro \
+    -v /etc/shadow:/etc/shadow:ro \
+    $(id -G | tr ' ' '\n' | sed -e 's/^/--group-add /g' | tr '\n' ' ') \
+    -u $UID $docker_img \
+    "$@"
+}
+
+docker_build()
+{
+    cat Dockerfile | docker build -t $docker_img -
+}
+
+git clean -fdx
+
+# keystore password in "vanilla"
+echo "password is 'vanilla'"
+mkdir -p keys
+[ -f ~/.my.keystore ] || yes | keytool -genkey -v -keystore ~/.my.keystore -storepass vanilla -alias SomeAlias -keyalg RSA -keysize 4096 || true
+docker_build
+docker_run env ANDROID_HOME=/usr/local/android-sdk-linux\
+    ./gradlew clean assembleRelease "$@"
+for i in build/outputs/apk/website/release/*.apk
+do
+    echo "SIGN $i"
+    echo "password is 'vanilla'"
+    docker_run env ANDROID_HOME=/usr/local/android-sdk-linux\
+        jarsigner -verbose -keystore ~/.my.keystore -storepass vanilla $i SomeAlias
+done
+
+echo "APK available in build/outputs/apk/website/release/"
+cp build/outputs/apk/website/release/*universal*apk final.apk
+echo "Universal APK available as final.apk"
